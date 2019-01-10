@@ -24,11 +24,11 @@ class Vector{
 public:
     double x,y;
     Vector(){
-      y=x=0;
+      y = x = 0;
     };
     Vector(const Vector& v){
-      x=v.x;
-      y=v.y;
+      x = v.x;
+      y = v.y;
     };
     Vector(double ax, double ay){
       x = ax;
@@ -99,6 +99,7 @@ public:
     cout << "])" << endl;
   };
 
+
   void Compute(OpKernelContext* context) override {
     // some checks to be sure ...
     DCHECK_EQ(2, context->num_inputs());
@@ -124,6 +125,18 @@ public:
     auto box_a = box_a_tensor.vec<float>();
     auto box_b = box_b_tensor.vec<float>();
     auto output = output_tensor->scalar<float>();
+
+
+    double da = box_a(0)-box_b(0);
+    double db = box_a(1)-box_b(1);
+    double distanz = sqrt(da*da + db*db);
+    da = box_a(2)+box_b(2);
+    db = box_a(3)+box_b(3);
+    double min_distanz = sqrt(da*da + db*db);
+    if(distanz > min_distanz){
+      output(0) = 0.0;
+      return;
+    }
 
     vector<Vector> rect_1 = rectangle_vertices(
       box_a(0),box_a(1),box_a(2),box_a(3),box_a(4));

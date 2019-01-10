@@ -8,6 +8,8 @@ import iou
 iou_module = tf.load_op_library('./libiou.so')
 iou_tf_function = iou_module.iou
 
+scale_vec = np.array([40,80,2,2,2*3.1415])
+
 class IOU_test(unittest.TestCase):
    '''
    def test_raisesExceptionWithIncompatibleDimensions(self):
@@ -45,17 +47,19 @@ class IOU_test(unittest.TestCase):
            box_a_p = tf.placeholder(tf.float32, shape = (5))
            box_b_p = tf.placeholder(tf.float32, shape = (5))
            iou_tf = iou_tf_function(box_a_p,box_b_p)
+
            time_start = time.clock()
-           for i in range(10000):
-               a = np.random.rand(5)*[5,5,5,5,2*3.1415]
-               b = np.random.rand(5)*[5,5,5,5,2*3.1415]
+           for i in range(100):
+               a = np.random.rand(5)*scale_vec
+               b = np.random.rand(5)*scale_vec
                iou_module = sess.run(iou_tf, feed_dict = {box_a_p: a, box_b_p: b})
            time_elapsed = (time.clock() - time_start)
            print("tensorflow version took %fs"%time_elapsed)
+
            time_start = time.clock()
-           for i in range(10000):
-               a = np.random.rand(5)*[5,5,5,5,2*3.1415]
-               b = np.random.rand(5)*[5,5,5,5,2*3.1415]
+           for i in range(100):
+               a = np.random.rand(5)*scale_vec
+               b = np.random.rand(5)*scale_vec
                iou_python = iou.iou_pure_python(a,b)
            time_elapsed = (time.clock() - time_start)
            print("python version took %fs"%time_elapsed)
@@ -69,9 +73,9 @@ class IOU_test(unittest.TestCase):
 
             iou_tf = iou_tf_function(box_a_p,box_b_p)
 
-            for i in range(10000):
-                a = np.random.rand(5)*[5,5,5,5,2*3.1415]
-                b = np.random.rand(5)*[5,5,5,5,2*3.1415]
+            for i in range(100):
+                a = np.random.rand(5)*scale_vec
+                b = np.random.rand(5)*scale_vec
 
                 iou_module = sess.run(iou_tf, feed_dict = {box_a_p: a, box_b_p: b})
                 iou_python = iou.iou_pure_python(a,b)
